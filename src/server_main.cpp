@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) {
    int c = 0;
    long portval;
    std::string numString;
-   boost::multiprecision::uint128_t number = 9804317095675;
-   //LARGEINT number = 526487452147856363652554758;
+   LARGEINT number;
    int numNodes = 2;
 
    while ((c = getopt(argc, argv, "f:n:a:p:")) != -1) {
@@ -44,7 +43,7 @@ int main(int argc, char *argv[]) {
 
         // Set the number to factor	    
         case 'f':
-            number = static_cast<LARGEINT>( boost::multiprecision::uint128_t(optarg));
+            number = static_cast<LARGEINT>( LARGEINT(optarg));
             std::cout << number << "\n";
             break;
         // Set the number of nodes in the distributed system

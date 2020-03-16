@@ -172,17 +172,17 @@ bool TCPServer::handleConnections() {
 
    // Loop through our connections, handling them
       std::list<std::unique_ptr<TCPConn>>::iterator tptr = _connlist.begin();
-      if(!(start < std::chrono::high_resolution_clock::now())) {
-         std::cout << "changeing time \n";
+      if(initTime) {
          auto start = std::chrono::high_resolution_clock::now();
+         initTime = false;
       }
 
       while (tptr != _connlist.end())
       {
          if((*tptr)->foundAllPrimeFactors) {
             auto stop = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
-          
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+            std::cout << "Total Time: " << duration.count() << " seconds\n";
             //if we have found all prime factors tell all connections to disconnect
             std::list<std::unique_ptr<TCPConn>>::iterator tptr3 = _connlist.begin();
             for(; tptr3 != _connlist.end(); tptr3++) {

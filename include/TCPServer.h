@@ -31,6 +31,7 @@ public:
    unsigned int serverTask = 0;
 
    std::chrono::system_clock::time_point start;
+   bool initTime = true;
    // stores the resulting prime factors
    std::vector<boost::multiprecision::uint128_t> primeFactorsVector; 
 

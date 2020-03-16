@@ -1,8 +1,6 @@
 /****************************************************************************************
- * tcp_server - program that sets up a basic TCP server
+ * tcp_server - program that sets up a basic TCP server for factoring large numbers
  *
- *              **Students should not modify this code! Or at least you can to test your
- *                code, but your code should work with the unmodified version
  *
  ****************************************************************************************/  
 
@@ -11,16 +9,12 @@
 #include <getopt.h>
 #include "TCPServer.h"
 #include "exceptions.h"
-#include <boost/multiprecision/cpp_int.hpp>
 #include "DivFinderServer.h"
 
 using namespace std; 
 
 void displayHelp(const char *execname) {
-   std::cout << execname << " [-p <portnum>] [-a <ip_addr>]\n";
-   std::cout << "   p: the port to bind the server to\n";
-   std::cout << "   a: the IP address to bind the server\n";
-
+   std::cout << execname << " [-f <number to factor>] [-p <portnum>] [-a <ip_addr>] [-v <verbosity 0-1>]\n";
 }
 
 // global default values
@@ -34,28 +28,26 @@ int main(int argc, char *argv[]) {
    // Get the command line arguments and set params appropriately
    int c = 0;
    long portval;
-   std::string numString;
-   LARGEINT number;
+   LARGEINT number = 0;
    int numNodes = 2;
+   int verbosity = 0;
 
-   while ((c = getopt(argc, argv, "f:n:a:p:")) != -1) {
+   while ((c = getopt(argc, argv, "f:n:a:p:v:")) != -1) {
         switch (c) {
 
         // Set the number to factor	    
         case 'f':
             number = static_cast<LARGEINT>( LARGEINT(optarg));
-            std::cout << number << "\n";
             break;
+
         // Set the number of nodes in the distributed system
         case 'n':
             numNodes = stoi(optarg, NULL, 10);
-            std::cout << numNodes << "\n";
             break;
 
         // IP address to attempt to bind to
         case 'a':
             ip_addr = optarg; 
-            std::cout << ip_addr << "\n";
             break;
 
         // Port number to bind to
@@ -63,16 +55,23 @@ int main(int argc, char *argv[]) {
             portval = strtol(optarg, NULL, 10);
             if ((portval < 1) || (portval > 65535)) {
                 std::cout << "Invalid port. Value must be between 1 and 65535";
-                std::cout << "Format: " << argv[0] << " [<max_range>] [<max_threads>]\n";
                 exit(0);
             }
             port = (unsigned short) portval;
-            std::cout << port << "\n";
+            break;
+        
+        // Set the verbosity
+        case 'v':
+            verbosity = stoi(optarg, NULL, 10);
+            if(verbosity != 0 && verbosity != 1) {
+                std::cout << "Invalid verbosity. Value must be either 0 or 1\n";
+                exit(0);
+            }
             break;
 
         case '?':
             displayHelp(argv[0]);
-            break;
+            return 0;
 
         default:
             std::cout << "Unknown command line option '" << c << "'\n";
@@ -81,10 +80,16 @@ int main(int argc, char *argv[]) {
         }
    }
 
+   if(number == 0) {
+       std::cout << "Number to factor is a required argument\n";
+       displayHelp(argv[0]);
+       return -1;
+   }
+
    // Try to set up the server for listening
-   TCPServer server(number, numNodes);
+   TCPServer server(number, numNodes, verbosity);
    try {
-      cout << "Binding server to " << ip_addr << " port " << port << endl;
+      std::cout << "Binding server to " << ip_addr << " port " << port << endl;
       server.bindSvr(ip_addr.c_str(), port);
 
    } catch (invalid_argument &e) 
@@ -93,10 +98,10 @@ int main(int argc, char *argv[]) {
       return -1;
    }	   
 
-   cout << "Server established.\n";
+   std::cout << "Server established.\n";
 
    try {
-      cout << "Listening.\n";	   
+      std::cout << "Listening.\n";	   
       server.runServer();
    } catch (socket_error &e) {
       cerr << "Unrecoverable socket error. Exiting.\n";
@@ -106,6 +111,6 @@ int main(int argc, char *argv[]) {
 
    server.shutdown();
 
-   cout << "Server shut down\n";
+   std::cout << "Server shut down\n";
    return 0;
 }

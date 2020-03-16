@@ -14,7 +14,7 @@
 class TCPServer : public Server 
 {
 public:
-   TCPServer(LARGEINT number, int numNodes);
+   TCPServer(LARGEINT number, int numNodes, int verbosity);
    ~TCPServer();
 
    virtual void bindSvr(const char *ip_addr, unsigned short port);
@@ -45,6 +45,8 @@ private:
    LARGEINT number;
    // The number of nodes in this system
    int numOfNodes = 2;
+
+   int verbosity = 0;
 };
 
 

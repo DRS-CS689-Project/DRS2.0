@@ -13,13 +13,13 @@
 #include "TCPServer.h"
 #include "ALMgr.h"
 #include "DivFinderServer.h"
-#include <boost/multiprecision/cpp_int.hpp>
 #include <chrono>
 #include <thread>
 
-TCPServer::TCPServer(LARGEINT number, int numNodes){
+TCPServer::TCPServer(LARGEINT number, int numNodes, int verbosity){
    this->number = number;
    this->numOfNodes = numNodes;
+   this->verbosity = verbosity;
 }
 
 
@@ -129,14 +129,12 @@ TCPConn *TCPServer::handleSocket() {
          std::string ipaddr_str;
          new_conn->getIPAddrStr(ipaddr_str);
 
-         std::cout << "Client IP: " << ipaddr_str << std::endl;//testing
-
          // Check the whitelist
          ALMgr al("whitelist");
          if (!al.isAllowed(new_conn->getIPAddr()))
          {
             // Disconnect the user
-            std::cout << "This IP address is not authorized" << std::endl;
+            std::cout << "Connection from unauthorized IP address" << std::endl;
             new_conn->sendText("Not Authorized To Log into System\n");
             new_conn->sendDie();
 
@@ -144,12 +142,15 @@ TCPConn *TCPServer::handleSocket() {
          }
 
          std::cout << "***Got a connection***\n";
+         std::cout << "Client IP: " << ipaddr_str << std::endl;
 
          _connlist.push_back(std::unique_ptr<TCPConn>(new_conn));
 
          if(_connlist.size() != numOfNodes) 
             new_conn->sendText("Waiting for all nodes to connect...\n");
-         
+         if(_connlist.size() == numOfNodes)
+            std::cout << "All nodes have joined...finding prime factors.\n";
+            
          new_conn->node = nodes;
          nodes++;
 
@@ -169,14 +170,12 @@ TCPConn *TCPServer::handleSocket() {
  **********************************************************************************************/
 
 bool TCPServer::handleConnections() {
-
-   // Loop through our connections, handling them
       std::list<std::unique_ptr<TCPConn>>::iterator tptr = _connlist.begin();
       if(initTime) {
          start = std::chrono::high_resolution_clock::now();
          initTime = false;
       }
-
+      // Loop through our connections, handling them
       while (tptr != _connlist.end())
       {
          if((*tptr)->foundAllPrimeFactors) {
@@ -197,14 +196,16 @@ bool TCPServer::handleConnections() {
          if (!(*tptr)->isConnected()) {
             // Remove them from the connect list
             tptr = _connlist.erase(tptr);
-            std::cout << "Connection disconnected.\n";
+            if(verbosity)
+               std::cout << "Connection disconnected.\n";
             continue;
          }
 
          // Process any user inputs
          if((*tptr)->handleConnection()) {
             auto primeFound = (*tptr)->getPrimeFactor();
-            std::cout << "In TCPServer - primeFound: " << primeFound << std::endl;
+            if(verbosity)
+               std::cout << "In TCPServer - primeFound: " << primeFound << std::endl;
             this->primeFactorsVector.emplace_back(primeFound);
 
             //a prime was found so send stop message to all other connections

@@ -26,36 +26,17 @@ int main(int argc, char *argv[]) {
    unsigned short port = 9999;
 
 
-   // Check the command line input
-   /*if (argc < 3) {
-      displayHelp(argv[0]);
-      exit(0);
-   }*/
-
-   /*
-   // Read in the IP address from the command line
-   std::string ip_addr(argv[1]);
-
-   // Read in the port
-   long portval = strtol(argv[2], NULL, 10);
-   if ((portval < 1) || (portval > 65535)) {
-      std::cout << "Invalid port. Value must be between 1 and 65535";
-      std::cout << "Format: " << argv[0] << " [<max_range>] [<max_threads>]\n";
-       exit(0);
-   }
-   unsigned short port = (unsigned short) portval;
-   */
-   
+   // Check the command line input & Get the command line arguments and set params appropriately
    while ((c = getopt(argc, argv, "a:p:v:")) != -1) {
       switch (c) {
          case 'a':
             ip_addr = optarg;
-            std::cout << "a: " << ip_addr << std::endl;
+            //std::cout << "a: " << ip_addr << std::endl;
             break;
 
          case 'v':
             verbosity = stoi(optarg, NULL, 10);
-            std::cout << "v: " << verbosity << std::endl;
+            //std::cout << "v: " << verbosity << std::endl;
             if(verbosity != 0 && verbosity != 1)
             {
                std::cout << "Invalid verbosity. Value must be either 0 or 1\n";
@@ -65,7 +46,7 @@ int main(int argc, char *argv[]) {
 
          case 'p':
             portval = strtol(optarg, NULL, 10);
-            std::cout << "p: " << portval << std::endl;
+            //std::cout << "p: " << portval << std::endl;
             if ((portval < 1) || (portval > 65535)) {
                 std::cout << "Invalid port. Value must be between 1 and 65535";
                 exit(0);
@@ -78,8 +59,6 @@ int main(int argc, char *argv[]) {
             break;
       }
    }
-
-   // Get the command line arguments and set params appropriately
 
    // Try to set up the server for listening
    TCPClient client(verbosity);

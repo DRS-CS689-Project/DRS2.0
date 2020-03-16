@@ -14,7 +14,7 @@
 using namespace std; 
 
 void displayHelp(const char *execname) {
-   std::cout << execname << " <ip_addr> <port>\n";
+   std::cout << execname << " -a <ip_addr> -p <port> -v <verbosity>\n";
 }
 
 

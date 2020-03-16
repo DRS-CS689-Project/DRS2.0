@@ -9,7 +9,6 @@
 #include "TCPConn.h"
 #include "strfuncts.h"
 #include <boost/lexical_cast.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
 #include "DivFinderServer.h"
 
 TCPConn::TCPConn(LARGEINT number) { 
@@ -17,9 +16,7 @@ TCPConn::TCPConn(LARGEINT number) {
    this->number = number;
 }
 
-
 TCPConn::~TCPConn() {
-
 }
 
 /**********************************************************************************************
@@ -140,7 +137,6 @@ bool TCPConn::waitForDivisor(){
       if (!dataHelper.getCmdData(task, dataHelper.c_task, dataHelper.c_endtask)) 
          return false;
       
-
       std::string taskStr(task.begin(), task.end());
 
       unsigned int taskNumber = std::stoul(taskStr);

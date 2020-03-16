@@ -204,7 +204,7 @@ bool TCPServer::handleConnections() {
          if((*tptr)->handleConnection()) {
             auto primeFound = (*tptr)->getPrimeFactor();
             if(verbosity)
-               std::cout << "In TCPServer - primeFound: " << primeFound << std::endl;
+               std::cout << "Server received a prime: " << primeFound << std::endl;
             this->primeFactorsVector.emplace_back(primeFound);
 
             //a prime was found so send stop message to all other connections

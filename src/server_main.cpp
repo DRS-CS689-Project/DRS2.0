@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
       return -1;
    }	   
 
-   std::cout << "Server established.\n";
+   std::cout << "Server established. Waiting for " << numNodes << " nodes to join.\n";
 
    try {
       std::cout << "Listening.\n";	   

@@ -141,8 +141,7 @@ TCPConn *TCPServer::handleSocket() {
             return NULL;
          }
 
-         std::cout << "***Got a connection***\n";
-         std::cout << "Client IP: " << ipaddr_str << std::endl;
+         std::cout << "Got a connection from " << ipaddr_str << std::endl;
 
          _connlist.push_back(std::unique_ptr<TCPConn>(new_conn));
 
@@ -150,7 +149,7 @@ TCPConn *TCPServer::handleSocket() {
             new_conn->sendText("Waiting for all nodes to connect...\n");
          if(_connlist.size() == numOfNodes)
             std::cout << "All nodes have joined...finding prime factors.\n";
-            
+
          new_conn->node = nodes;
          nodes++;
 

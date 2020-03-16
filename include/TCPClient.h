@@ -14,6 +14,7 @@ class TCPClient : public Client
 {
 public:
    TCPClient();
+   TCPClient(int inputVerb);
    ~TCPClient();
 
    virtual void connectTo(const char *ip_addr, unsigned short port);
@@ -28,6 +29,7 @@ public:
 
    bool initMessage = true;
    bool activeThread = false;
+   int verbose = 0;
 
 private:
    // Stores the user's typing

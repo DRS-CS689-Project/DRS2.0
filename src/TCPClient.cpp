@@ -34,6 +34,11 @@ TCPClient::TCPClient() {
    dataHelper = DataHelper();
 }
 
+TCPClient::TCPClient(int inputVerb) {
+   this->verbose = inputVerb;
+   dataHelper = DataHelper();
+}
+
 /**********************************************************************************************
  * TCPClient (destructor) - No cleanup right now
  *
@@ -89,8 +94,8 @@ void TCPClient::handleConnection() {
             continue;
          }
 
-         std::string rawMesgStr(buf.begin(), buf.end());
-         std::cout << "Client Recieved Raw Message: " << rawMesgStr << std::endl;
+         //std::string rawMesgStr(buf.begin(), buf.end());
+         //std::cout << "Client Recieved Raw Message: " << rawMesgStr << std::endl;
 
          if (!(dataHelper.findCmd(buf, dataHelper.c_die) == buf.end()))
          {
@@ -99,7 +104,7 @@ void TCPClient::handleConnection() {
 
          if (!(dataHelper.findCmd(buf, dataHelper.c_stop) == buf.end()))
          {
-
+            std::cout << "***Recieved STOP Process Command***\n" << std::endl;
             this->d.setEndProcess(true);
             this->activeThread = false;
             if (this->th != nullptr)
@@ -114,13 +119,13 @@ void TCPClient::handleConnection() {
             std::string numStr(buf.begin(), buf.end());
 
             this->inputNum = numStr;
-            std::cout << "recieved : " << numStr << std::endl;
+            std::cout << "Factoring: " << numStr << std::endl;
 
             //Used 563, 197, 197, 163, 163, 41, 41, 
             LARGEINT num = static_cast<LARGEINT>(this->inputNum);
             
             this->d = DivFinderServer(num);
-            this->d.setVerbose(0);
+            this->d.setVerbose(this->verbose);
 
             this->clientTask++;
 
@@ -152,8 +157,8 @@ void TCPClient::handleConnection() {
             dataHelper.wrapCmd(buf, dataHelper.c_prime, dataHelper.c_endprime);
                
             std::string mesg = static_cast<std::string>(d.getPrimeDivFound());
-            mesg = mesg + "\n"; 
-            std::cout << "Sending: " << this->clientTask << " " << mesg << std::endl;
+            //mesg = mesg + "\n"; 
+            std::cout << "Sending: " << mesg << " for task: "<< this->clientTask << std::endl << std::endl;
             //std::this_thread::sleep_for(std::chrono::seconds(1));
             
             if (this->th != nullptr)

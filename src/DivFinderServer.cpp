@@ -80,17 +80,14 @@ LARGEINT DivFinderServer::calcPollardsRho(LARGEINT n) {
     //std::cout << "After seed" << std::endl;
     // pick a random number from the range [2, N)
     LARGEINT2X x = (rand() % (n - 2)) + 2;
-    //LARGEINT2X x = (rand_r(&seed1) % (n - 2)) + 2;
     LARGEINT2X y = x;    // Per the algorithm
 
     //thread_local unsigned int seed2 = time(NULL) + rand();
     // random number for c = [1, N)
     LARGEINT2X c = (rand() % (n - 1)) + 1;
-    //LARGEINT2X c = (rand_r(&seed1) % (n - 1)) + 1;
 
     LARGEINT2X d = 1;
-    if (verbose == 3)
-        std::cout << "x: " << x << ", y: " << y << ", c: " << c << std::endl;
+    //std::cout << "x: " << x << ", y: " << y << ", c: " << c << std::endl;//Testing
 
     // Loop until either we find the gcd or gcd = 1
     while (d == 1 && !end_process) {
@@ -106,8 +103,7 @@ LARGEINT DivFinderServer::calcPollardsRho(LARGEINT n) {
 
         // Calculate GCD of |x-y| and tn
         LARGESIGNED2X z = (LARGESIGNED2X)x - (LARGESIGNED2X)y;
-        if (verbose == 3)
-            std::cout << "x: " << x << ", y: " << y << ", z: " << z << std::endl;
+        //std::cout << "x: " << x << ", y: " << y << ", z: " << z << std::endl;//TESTING
 
         if (z < 0)
             d = boost::math::gcd((LARGEINT2X)-z, (LARGEINT2X)n);
@@ -136,11 +132,11 @@ LARGEINT DivFinderServer::calcPollardsRho(LARGEINT n) {
 
 
 bool DivFinderServer::isPrimeBF(LARGEINT n, LARGEINT& divisor) {
-    if (verbose >= 3)
+    if (verbose > 0)
         std::cout << "Checking if prime: " << n << std::endl;
 
-    if (n == 316969)
-        std::cout << "Checking if prime: " << n << std::endl;
+    /*if (n == 316969)
+        std::cout << "Checking if prime: " << n << std::endl;*/ //Testing
 
     divisor = 0;
 
@@ -152,7 +148,7 @@ bool DivFinderServer::isPrimeBF(LARGEINT n, LARGEINT& divisor) {
         divisor = 2;
         return false;
     }
-    else if ((n & 3) == 0) {
+    else if ((n % 3) == 0) {
         divisor = 3;
         return false;
     }
@@ -186,38 +182,37 @@ void DivFinderServer::factorThread(LARGEINT n) {
         return;
     }
 
-    if (verbose >= 2)
-        std::cout << "Factoring: " << n << std::endl;
-
     bool div_found = false;
     unsigned int iters = 0;
 
     while (!div_found && !end_process) {
-        if (verbose >= 3)
+        if (verbose > 0)
             std::cout << "Starting iteration: " << iters << std::endl;
 
         // If we have tried Pollards Rho a specified number of times, run the
         // costly prime check to see if this is a prime number. Also, increment
         // iters after the check
         if (iters++ == primecheck_depth) {
-            if (verbose >= 2)
+            if (verbose > 0)
                 std::cout << "Pollards rho timed out, checking if the following is prime: " << n << std::endl;
             LARGEINT divisor;
             if (!isPrimeMR(n, 10)){
                 if (isPrimeBF(n, divisor)) {
-                    if (verbose >= 2)
-                        std::cout << "Prime found: " << n << std::endl;
+                    if (verbose > 0)
+                        std::cout << "Prime found in Brute Force: " << n << std::endl;
                     this->primeDivFound = n;
                     return;
                 }
                 else {   // We found a prime divisor, save it and keep finding primes
-                    if (verbose >= 2)
-                        std::cout << "Prime found: " << divisor << std::endl;
+                    if (verbose > 0)
+                        std::cout << "Prime found in Brute Force: " << divisor << std::endl;
                     this->primeDivFound = divisor;
                     return;
                 }
             }
             else{
+                if (verbose > 0)
+                    std::cout << "Prime found in Miller-Rabin: " << n << std::endl;
                 this->primeDivFound = n;
                 return;
             }
@@ -231,7 +226,7 @@ void DivFinderServer::factorThread(LARGEINT n) {
         }
 
         else if (d != n) {
-            if (verbose >= 1)
+            if (verbose > 0)
                 std::cout << "Divisor found: " << d << std::endl;
 
             // Factor the divisor
@@ -242,7 +237,7 @@ void DivFinderServer::factorThread(LARGEINT n) {
 
         // If d == n, then we re-randomize and continue the search up to the prime check depth
     }
-    std::cout << "process end signal detected" << std::endl;
+    std::cout << "Process END signal detected" << std::endl;
     return;
 }
 
@@ -304,9 +299,10 @@ bool DivFinderServer::millerTest(LARGEINT2X d, LARGEINT2X n)
 // is probably prime.  k is an input parameter that determines 
 // accuracy level. Higher value of k indicates more accuracy. 
 //bool isPrime(int n, int k) 
-bool DivFinderServer::isPrimeMR(LARGEINT n, int k) 
+bool DivFinderServer::isPrimeMR(LARGEINT n, LARGEINT k) 
 { 
-    std::cout << "Checking if prime: " << n << std::endl;
+    if (verbose > 0)
+        std::cout << "Checking if number is prime with Miller-Rabin test: " << n << std::endl;
     // Corner cases 
     if (n <= 1 || n == 4)  return false; 
     if (n <= 3) return true; 
@@ -318,9 +314,13 @@ bool DivFinderServer::isPrimeMR(LARGEINT n, int k)
   
     // Iterate given nber of 'k' times 
     //LARGEINT2X k_256t = k;
-    for (LARGEINT2X i = 0; i < k; i++) 
-         if (!millerTest(d, n)) 
-              return false; 
+    for (LARGEINT2X i = 0; i < k; i++){ 
+         if (!millerTest(d, n)){ 
+              //std::cout << "MR returns false\n";//Testing
+              return false;
+         }
+    }
   
+    //std::cout << "MR returns true\n";//Testing
     return true; 
 }

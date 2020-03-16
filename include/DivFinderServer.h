@@ -38,7 +38,7 @@ public:
     LARGEINT calcPollardsRho(LARGEINT n);
  
     bool isPrimeBF(LARGEINT n, LARGEINT& divisor);
-    bool isPrimeMR(LARGEINT n, int k); 
+    bool isPrimeMR(LARGEINT n, LARGEINT k); 
 
     void factorThread(LARGEINT n);
 

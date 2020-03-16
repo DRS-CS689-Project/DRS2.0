@@ -9,20 +9,20 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 //namespace for boost lib to handle large numbers
-using namespace boost::multiprecision;
+//using namespace boost::multiprecision;
 
 //number of time to run pollards rho before running the expensive prime brute force check
 const unsigned int primecheck_depth = 1;
 
 /* "Unsigned int type to hold original value and calculations" */
-#define LARGEINT uint128_t
+#define LARGEINT boost::multiprecision::uint128_t
 //#define LARGEINT uint256_t uncomment for 256 bits
 
 /* "Unsigned int twice as large as LARGEINT (bit-wise)" */
-#define LARGEINT2X uint256_t
+#define LARGEINT2X boost::multiprecision::uint256_t
 
 /* "Signed int made of twice the bits as LARGEINT2X" */
-#define LARGESIGNED2X int512_t
+#define LARGESIGNED2X boost::multiprecision::int512_t
 
 
 class DivFinderServer {

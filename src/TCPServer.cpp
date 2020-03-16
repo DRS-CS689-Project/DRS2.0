@@ -12,12 +12,12 @@
 #include <sstream>
 #include "TCPServer.h"
 #include "ALMgr.h"
+#include "DivFinderServer.h"
 #include <boost/multiprecision/cpp_int.hpp>
 #include <chrono>
 #include <thread>
 
-TCPServer::TCPServer(boost::multiprecision::uint128_t number, int numNodes){
-//TCPServer::TCPServer(LARGEINT number, int numNodes){
+TCPServer::TCPServer(LARGEINT number, int numNodes){
    this->number = number;
    this->numOfNodes = numNodes;
 }
@@ -138,7 +138,7 @@ TCPConn *TCPServer::handleSocket() {
             // Disconnect the user
             std::cout << "This IP address is not authorized" << std::endl;
             new_conn->sendText("Not Authorized To Log into System\n");
-            new_conn->disconnect();
+            new_conn->sendDie();
 
             return NULL;
          }

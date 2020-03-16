@@ -44,8 +44,7 @@ int main(int argc, char *argv[]) {
 
         // Set the number to factor	    
         case 'f':
-            number = boost::multiprecision::uint128_t(optarg);
-            //number = static_cast<LARGEINT>( boost::multiprecision::uint128_t(optarg));
+            number = static_cast<LARGEINT>( boost::multiprecision::uint128_t(optarg));
             std::cout << number << "\n";
             break;
         // Set the number of nodes in the distributed system

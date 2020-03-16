@@ -117,7 +117,7 @@ void TCPClient::handleConnection() {
             std::cout << "recieved : " << numStr << std::endl;
 
             //Used 563, 197, 197, 163, 163, 41, 41, 
-            uint128_t num = static_cast<uint128_t>(this->inputNum);
+            LARGEINT num = static_cast<LARGEINT>(this->inputNum);
             
             this->d = DivFinderServer(num);
             this->d.setVerbose(0);

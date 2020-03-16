@@ -12,7 +12,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include "DivFinderServer.h"
 
-TCPConn::TCPConn(boost::multiprecision::uint128_t number) { 
+TCPConn::TCPConn(LARGEINT number) { 
    dataHelper = DataHelper();
    this->number = number;
 }
@@ -154,7 +154,7 @@ bool TCPConn::waitForDivisor(){
       
 
       std::string primeStr(buf.begin(), buf.end());
-      boost::multiprecision::uint128_t prime(primeStr);
+      LARGEINT prime(primeStr);
 
       if (prime == 563){
          int val = 1;
@@ -228,7 +228,7 @@ bool TCPConn::sendData(std::vector<uint8_t> &buf) {
  *                  stop command to client.
  *
  **********************************************************************************************/
-void TCPConn::stopProcessing(boost::multiprecision::uint128_t newNum) {
+void TCPConn::stopProcessing(LARGEINT newNum) {
    this->number = this->number/newNum;
    _status = s_sendStop;
 }

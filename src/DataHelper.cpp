@@ -1,7 +1,12 @@
 #include "DataHelper.h"
 #include <algorithm>
 
+// Utility class created to make working with data and tags associated with server/client
+// communication easier. This class also specifies the types of tags that are avaliable for
+// use in communications
+
 DataHelper::DataHelper() {
+   // define the tags
     uint8_t slash = (uint8_t) '/';
 
     c_task.push_back((uint8_t) '<');

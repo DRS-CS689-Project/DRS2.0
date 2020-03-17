@@ -122,6 +122,13 @@ void TCPConn::sendNumber() {
    _status = s_waitForReply;  
 }
 
+/**********************************************************************************************
+ * waitForDivisor - waits for a divisor from a client. Also determines if additional divisors
+ *                  need to be found or sets flag indicating all primes have been found which
+ *                  alerts the server it's time to shutdown
+ *
+ **********************************************************************************************/
+
 bool TCPConn::waitForDivisor(){
    if (_connfd.hasData()) {
       std::vector<uint8_t> task;
@@ -308,29 +315,6 @@ int TCPConn::sendText(const char *msg, int size) {
       return -1;  
    }
    return 0;
-}
-
-bool TCPConn::isNewIPAllowed(std::string inputIP){
-   std::ifstream whitelistFile("whitelist");
-   if(!whitelistFile){
-      std::cout << "whitelist file not found" << std::endl;
-      return false;
-   }
-   
-   if (whitelistFile.is_open()){
-      std::string line;
-      while(whitelistFile >> line){
-         //std::cout << "IP: " << inputIP << ", line: " << line << std::endl;//
-         if (inputIP == line){
-            std::cout << "New connection IP: "<< inputIP << " , authorized from whitelist" << std::endl;
-            return true;
-         }
-      }
-   }
-
-   std::cout << "Match NOT FOUND!" << std::endl;
-   return false;
-
 }
 
 /**********************************************************************************************

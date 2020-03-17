@@ -7,8 +7,7 @@
 
 const int max_attempts = 2;
 
-// Methods and attributes to manage a network connection, including tracking the username
-// and a buffer for user input. Status tracks what "phase" of login the user is currently in
+// Methods and attributes to manage a network connection and prime factorization
 class TCPConn 
 {
 public:
@@ -29,8 +28,6 @@ public:
 
    unsigned long getIPAddr() { return _connfd.getIPAddr(); };
    void getIPAddrStr(std::string &buf);
-
-   bool isNewIPAllowed(std::string inputIP);
 
    bool getData(std::vector<uint8_t> &buf);
    bool sendData(std::vector<uint8_t> &buf);

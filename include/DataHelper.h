@@ -4,21 +4,9 @@
 #include <netinet/in.h>
 #include <vector>
 
-/******************************************************************************************
- * DataHelper - Parent class for student's TCP server
- *
- *  	   Server(Const): right now does nothing (still should call for future portability
- *  	   ~Server(Dest): no cleanup required in parent
- *
- *  	   bind - binds to an IP address and port on the server
- *  	   listen - starts listening on a single-threaded process (non-blocking) and loops
- *                listening for connections and handling the existing connections
- *  	   shutdown - shuts down the server properly
- *  	   
- *  	   Exceptions: sub-classes should throw a std::exception with the what string field
- *  	               populated for any issues.
- *
- *****************************************************************************************/
+// Utility class created to make working with data and tags associated with server/client
+// communication easier. This class also specifies the types of tags that are avaliable for
+// use in communications
 
 class DataHelper { 
    public:

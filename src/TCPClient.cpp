@@ -97,16 +97,20 @@ void TCPClient::handleConnection() {
          //std::string rawMesgStr(buf.begin(), buf.end());
          //std::cout << "Client Recieved Raw Message: " << rawMesgStr << std::endl;
 
+         //closes connection when <DIE> command is given from server
          if (!(dataHelper.findCmd(buf, dataHelper.c_die) == buf.end()))
          {
             closeConn();
          }
 
+         //Stop process with <STOP> command is given from server
          if (!(dataHelper.findCmd(buf, dataHelper.c_stop) == buf.end()))
          {
             std::cout << "***Recieved STOP Process Command***\n" << std::endl;
+            //send the stop command to thread
             this->d.setEndProcess(true);
             this->activeThread = false;
+            //resets thread
             if (this->th != nullptr)
             {
                this->th->join();
@@ -115,13 +119,20 @@ void TCPClient::handleConnection() {
 
          }
 
+         //Starts a Pollard Rho thread when a number is recieved
          if (dataHelper.getCmdData(buf, dataHelper.c_num, dataHelper.c_endnum)) {
             std::string numStr(buf.begin(), buf.end());
+
+            //safety check
+            if (this->th != nullptr)
+            {
+               this->th->join();
+               this->th.reset(nullptr);
+            }
 
             this->inputNum = numStr;
             std::cout << "Factoring: " << numStr << std::endl;
 
-            //Used 563, 197, 197, 163, 163, 41, 41, 
             LARGEINT num = static_cast<LARGEINT>(this->inputNum);
             
             this->d = DivFinderServer(num);
@@ -161,6 +172,7 @@ void TCPClient::handleConnection() {
             std::cout << "Sending: " << mesg << " for task: "<< this->clientTask << std::endl << std::endl;
             //std::this_thread::sleep_for(std::chrono::seconds(1));
             
+            //resets thread
             if (this->th != nullptr)
             {
                this->th->join();

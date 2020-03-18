@@ -75,14 +75,10 @@ LARGEINT DivFinderServer::calcPollardsRho(LARGEINT n) {
     int seed = std::hash<std::thread::id>{}(std::this_thread::get_id()) + static_cast<long int>(time(NULL));
     srand(seed);
 
-    //thread_local unsigned int seed1 = time(NULL) + rand();
-    //thRandGen::Seed(time(0));
-    //std::cout << "After seed" << std::endl;
     // pick a random number from the range [2, N)
     LARGEINT2X x = (rand() % (n - 2)) + 2;
     LARGEINT2X y = x;    // Per the algorithm
 
-    //thread_local unsigned int seed2 = time(NULL) + rand();
     // random number for c = [1, N)
     LARGEINT2X c = (rand() % (n - 1)) + 1;
 
@@ -220,7 +216,7 @@ void DivFinderServer::factorThread(LARGEINT n) {
 
         // We try to get a divisor using Pollards Rho
         LARGEINT d = calcPollardsRho(n);
-        //std::this_thread::sleep_for(std::chrono::microseconds(20));
+        //std::this_thread::sleep_for(std::chrono::microseconds(20));//TESTING
         if (d == 0) {
             return;
         }
@@ -241,7 +237,13 @@ void DivFinderServer::factorThread(LARGEINT n) {
     return;
 }
 
-
+/*****************************************************************************
+ * Power function used by Miller Test to do modular exponentiation. 
+ *      
+ *      returns (x^y) % 
+ * 
+ * referenced from https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin
+ * ***************************************************************************/
 LARGEINT2X DivFinderServer::power(LARGEINT2X x, LARGEINT2X y, LARGEINT2X p) 
 { 
     LARGEINT2X res = 1;      // Initialize result 
@@ -259,12 +261,16 @@ LARGEINT2X DivFinderServer::power(LARGEINT2X x, LARGEINT2X y, LARGEINT2X p)
     } 
     return res; 
 } 
-  
-// This function is called for all k trials. It returns 
-// false if n is composite and returns false if n is 
-// probably prime. 
-// d is an odd number such that  d*2<sup>r</sup> = n-1 
-// for some r >= 1 
+
+/***************************************************************************
+ * millerTest - run the Miller Rabin Algorithm for a primality test
+ *      This function is called for all k trials.
+ *      d is an odd number such that  d*2<sup>r</sup> = n-1 for some r >= 1 
+ * 
+ *      returns false if n is composite and false if n is probably prime. 
+ * 
+ * referenced from https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin
+ * ************************************************************************/
 bool DivFinderServer::millerTest(LARGEINT2X d, LARGEINT2X n) 
 { 
     // Pick a random number in [2..n-2] 
@@ -295,10 +301,16 @@ bool DivFinderServer::millerTest(LARGEINT2X d, LARGEINT2X n)
     return false; 
 } 
   
-// It returns false if n is composite and returns true if n 
-// is probably prime.  k is an input parameter that determines 
-// accuracy level. Higher value of k indicates more accuracy. 
-//bool isPrime(int n, int k) 
+/*****************************************************************
+ *  isPrimeMR - check if number prime using Miller Rabin algorithm
+ *      k is an input parameter that determines the accuracy
+ *        - higher value of k indicates more accuracy
+ *  
+ *      returns false if n is composite and returns true if n 
+ *      is probably 
+ * 
+ * referenced from https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin
+ * ***************************************************************/
 bool DivFinderServer::isPrimeMR(LARGEINT n, LARGEINT k) 
 { 
     if (verbose > 0)
@@ -313,7 +325,6 @@ bool DivFinderServer::isPrimeMR(LARGEINT n, LARGEINT k)
         d /= 2; 
   
     // Iterate given nber of 'k' times 
-    //LARGEINT2X k_256t = k;
     for (LARGEINT2X i = 0; i < k; i++){ 
          if (!millerTest(d, n)){ 
               //std::cout << "MR returns false\n";//Testing
